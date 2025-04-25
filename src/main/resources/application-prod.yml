@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: s30-04-unit-service-v1
+
+server:
+  port: 8030
+  servlet:
+    context-path: '/api/v1/unit-service'
