@@ -16,7 +16,7 @@ public class KafkaProducer implements Serializable {
     @Serial
     private static final long serialVersionUID = -5120381418389428256L;
 
-    private KafkaTemplate<String, Object> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     @Value("${app.kafka.notify-service.topic}")
     private String notifyTopic;

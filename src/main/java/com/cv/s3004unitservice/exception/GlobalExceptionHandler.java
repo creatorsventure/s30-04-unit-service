@@ -1,6 +1,6 @@
 package com.cv.s3004unitservice.exception;
 
-import com.cv.s2004orgservice.util.StaticUtil;
+import com.cv.s3004unitservice.util.StaticUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.http.ResponseEntity;

@@ -1,5 +1,7 @@
 package com.cv.s3004unitservice.config;
 
+import com.cv.s3004unitservice.service.component.RequestContextInterceptor;
+import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -7,12 +9,16 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @ComponentScan({"com.cv"})
 @Configuration
 @EnableCaching
+@AllArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
+
+    private final RequestContextInterceptor interceptor;
 
     @Bean
     public LocalValidatorFactoryBean validator() {
@@ -37,5 +43,10 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public jakarta.validation.Validator jakartaValidator() {
         return validator();
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(interceptor).addPathPatterns("/**");
     }
 }

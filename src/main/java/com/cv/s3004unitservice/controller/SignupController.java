@@ -1,6 +1,7 @@
 package com.cv.s3004unitservice.controller;
 
 import com.cv.s10coreservice.constant.ApplicationConstant;
+import com.cv.s10coreservice.dto.VerifyOTPDto;
 import com.cv.s10coreservice.enumeration.APIResponseType;
 import com.cv.s3002unitservicepojo.dto.SignupDto;
 import com.cv.s3004unitservice.service.intrface.SignupService;
@@ -11,10 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(ApplicationConstant.APP_NAVIGATION_API_SIGNUP)
@@ -28,12 +26,36 @@ public class SignupController {
     public ResponseEntity<Object> signup(@RequestBody @Valid SignupDto dto, BindingResult result) {
         try {
             if (result.hasErrors()) {
-                log.info("AuthenticationController.signup {}", result.getAllErrors());
+                log.info("SignupController.signup {}", result.getAllErrors());
                 return StaticUtil.getFailureResponse(result);
             }
             return StaticUtil.getSuccessResponse(signupService.signup(dto), APIResponseType.OBJECT_ONE);
         } catch (Exception e) {
-            log.error("AuthenticationController.signup {}", ExceptionUtils.getStackTrace(e));
+            log.error("SignupController.signup {}", ExceptionUtils.getStackTrace(e));
+            return StaticUtil.getFailureResponse(e);
+        }
+    }
+
+    @GetMapping(ApplicationConstant.APP_NAVIGATION_API_VERIFY_SIGNUP)
+    public ResponseEntity<Object> verifySignup(@RequestParam String payload) {
+        try {
+            return StaticUtil.getSuccessResponse(signupService.verifySignup(payload), APIResponseType.OBJECT_ONE);
+        } catch (Exception e) {
+            log.error("SignupController.verifySignup {}", ExceptionUtils.getStackTrace(e));
+            return StaticUtil.getFailureResponse(e);
+        }
+    }
+
+    @PostMapping(ApplicationConstant.APP_NAVIGATION_API_VERIFY_OTP)
+    public ResponseEntity<Object> verifyOTP(@RequestBody @Valid VerifyOTPDto dto, BindingResult result) {
+        try {
+            if (result.hasErrors()) {
+                log.info("SignupController.verifyOTP {}", result.getAllErrors());
+                return StaticUtil.getFailureResponse(result);
+            }
+            return StaticUtil.getSuccessResponse(signupService.verifyOTP(dto), APIResponseType.OBJECT_ONE);
+        } catch (Exception e) {
+            log.error("SignupController.verifyOTP {}", ExceptionUtils.getStackTrace(e));
             return StaticUtil.getFailureResponse(e);
         }
     }
