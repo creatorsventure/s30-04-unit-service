@@ -79,7 +79,7 @@ public class UserDetailServiceImplementation implements UserDetailService {
                         .status(ApplicationConstant.APPLICATION_STATUS_ACTIVE)
                         .build(),
                 Locale.ENGLISH,
-                environment.getProperty("app.api-gateway.org-service.reset-password-url") + encryptionComponent.encrypt(entity.getId()),
+                environment.getProperty("app.org-service.reset-password-url") + encryptionComponent.encrypt(entity.getId()),
                 entity.getId()
         ));
         return mapper.toDto(entity);

@@ -25,7 +25,7 @@ import java.util.Map;
 @AllArgsConstructor
 @Slf4j
 @Component
-public class GlobalAspect {
+public class GlobalServiceAspect {
 
     private final ExceptionComponent exceptionComponent;
     private final EntityManager entityManager;
@@ -35,8 +35,8 @@ public class GlobalAspect {
     }
 
     @Around("implementationMethods()")  // Adjust package
-    public Object handleImplementationExceptions(ProceedingJoinPoint joinPoint) throws Throwable {
-        log.info("➡️ handleImplementationExceptions:Entering {}.{}", joinPoint.getSignature().getDeclaringTypeName(), joinPoint.getSignature().getName());
+    public Object aroundImplementationMethods(ProceedingJoinPoint joinPoint) throws Throwable {
+        log.info("➡️ aroundImplementationMethods:Entering {}.{}", joinPoint.getSignature().getDeclaringTypeName(), joinPoint.getSignature().getName());
         long start = System.currentTimeMillis();
 
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
@@ -56,14 +56,14 @@ public class GlobalAspect {
             return result;
 
         } catch (DataAccessException | ConstraintViolationException | TransientObjectException dbEx) {
-            log.error("❌ DB Exception in {}.{}: {}", className, methodName, ExceptionUtils.getStackTrace(dbEx));
+            log.error("❌ aroundImplementationMethods: DB Exception in {}.{}: {}", className, methodName, ExceptionUtils.getStackTrace(dbEx));
             throw exceptionComponent.expose("app.message.failure.db.error", true);
         } catch (Exception ex) {
-            log.error("❌ General Exception in {}.{}: {}", className, methodName, ExceptionUtils.getStackTrace(ex));
+            log.error("❌ aroundImplementationMethods: General Exception in {}.{}: {}", className, methodName, ExceptionUtils.getStackTrace(ex));
             throw ex;
         } finally {
             long timeTaken = System.currentTimeMillis() - start;
-            log.info("⏱ handleImplementationExceptions:Completed {}.{} in {} ms", className, methodName, timeTaken);
+            log.info("⏱ aroundImplementationMethods:Completed {}.{} in {} ms", className, methodName, timeTaken);
         }
     }
 
@@ -81,10 +81,10 @@ public class GlobalAspect {
             }
 
             if (unitFilter != null && contextValues.get("unitId") != null) {
-                log.debug("➡️ Applying unitId filter param = {}", contextValues.get("unitId"));
+                log.debug("➡️ applyHibernateFilters: Applying unitId filter param = {}", contextValues.get("unitId"));
                 unitFilter.setParameter("unitId", contextValues.get("unitId"));
             } else {
-                throw exceptionComponent.expose("⚠️ unitId is not set in RequestContext; and merchantFilter is null.", false);
+                throw exceptionComponent.expose("⚠️ applyHibernateFilters: unitId is not set in RequestContext; and merchantFilter is null.", false);
             }
 
             /*

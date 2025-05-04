@@ -15,11 +15,11 @@ public class StaticUtil {
     public static ResponseEntity<Object> getSuccessResponse(Object o, APIResponseType type) {
         try {
             return new ResponseEntity<>(
-                    new APIResponseDto(true, "app.code.000", type.getValue(), o),
+                    new APIResponseDto(true, "app.message.success.000", type.getValue(), o),
                     HttpStatus.OK);
         } catch (Exception ex) {
             log.error("StaticUtil.getSuccessResponse", ex);
-            return new ResponseEntity<>(new APIResponseDto(false, "app.code.001",
+            return new ResponseEntity<>(new APIResponseDto(false, "app.message.failure.000",
                     APIResponseType.MESSAGE_ACTUAL.getValue(), ExceptionUtils.getMessage(ex)),
                     HttpStatus.BAD_REQUEST);
         }
@@ -34,18 +34,18 @@ public class StaticUtil {
                         HttpStatus.BAD_REQUEST);
             } else if (o instanceof BindingResult) {
                 return new ResponseEntity<>(
-                        new APIResponseDto(false, "app.code.001",
+                        new APIResponseDto(false, "app.message.failure.000",
                                 APIResponseType.MESSAGE_CODE_LIST.getValue(), ((BindingResult) o).getAllErrors()),
                         HttpStatus.BAD_REQUEST);
             } else {
                 return new ResponseEntity<>(new APIResponseDto(false,
-                        "app.code.001",
+                        "app.message.failure.000",
                         APIResponseType.MESSAGE_ACTUAL.getValue(), o),
                         HttpStatus.BAD_REQUEST);
             }
         } catch (Exception ex) {
             log.error("StaticUtil.getFailureResponse {1}", ex);
-            return new ResponseEntity<>(new APIResponseDto(false, "app.code.001",
+            return new ResponseEntity<>(new APIResponseDto(false, "app.message.failure.000",
                     APIResponseType.MESSAGE_ACTUAL.getValue(), ExceptionUtils.getMessage(ex)),
                     HttpStatus.BAD_REQUEST);
         }

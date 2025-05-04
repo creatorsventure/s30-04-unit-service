@@ -18,7 +18,7 @@ public class KafkaProducer implements Serializable {
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    @Value("${app.kafka.notify-service.topic}")
+    @Value("${app.notify-service.kafka.topic}")
     private String notifyTopic;
 
     public KafkaProducer(KafkaTemplate<String, Object> kafkaTemplate) {

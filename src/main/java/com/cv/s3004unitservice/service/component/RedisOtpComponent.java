@@ -6,6 +6,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
+import java.util.Base64;
 
 @Component
 @RequiredArgsConstructor
@@ -20,7 +21,7 @@ public class RedisOtpComponent {
      */
     public void saveSecret(String key, String secret, Duration ttl) {
         ValueOperations<String, String> ops = redisTemplate.opsForValue();
-        ops.set(OTP_SECRET_PREFIX + key, secret, ttl);
+        ops.set(OTP_SECRET_PREFIX + key, Base64.getEncoder().encodeToString(secret.getBytes()), ttl);
     }
 
     /**
@@ -28,7 +29,7 @@ public class RedisOtpComponent {
      */
     public String getSecret(String key) {
         ValueOperations<String, String> ops = redisTemplate.opsForValue();
-        return ops.get(OTP_SECRET_PREFIX + key);
+        return new String(Base64.getDecoder().decode(ops.get(OTP_SECRET_PREFIX + key)));
     }
 
     /**

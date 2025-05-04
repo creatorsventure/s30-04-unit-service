@@ -3,6 +3,7 @@ package com.cv.s3004unitservice.config;
 import com.cv.s10coreservice.constant.ApplicationConstant;
 import com.cv.s10coreservice.util.StaticUtil;
 import com.zaxxer.hikari.HikariDataSource;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
@@ -20,6 +21,7 @@ import java.util.Optional;
 
 @Slf4j
 @Configuration
+@RequiredArgsConstructor
 @EntityScan(basePackages = {
         "com.cv.s10coreservice.entity",
         "com.cv.s3002unitservicepojo.entity"
@@ -30,32 +32,32 @@ public class JPAConfig {
 
     @Bean
     @Primary
-    DataSourceProperties appDataSourceProperties() {
+    public DataSourceProperties appDataSourceProperties() {
         return new DataSourceProperties();
     }
 
     @Bean
     @Primary
-    HikariDataSource appDataSource() {
-        return appDataSourceProperties().initializeDataSourceBuilder().type(HikariDataSource.class).build();
+    public HikariDataSource appDataSource() {
+        return appDataSourceProperties().initializeDataSourceBuilder()
+                .type(HikariDataSource.class)
+                .build();
     }
 
     @Bean
-    AuditorAware<String> auditorProvider() {
+    public AuditorAware<String> auditorProvider() {
         return () -> {
             try {
-                return Optional.of(StaticUtil.extractHeader(ApplicationConstant.X_HEADER_USER_ID));
+                return Optional.ofNullable(StaticUtil.extractHeader(ApplicationConstant.X_HEADER_USER_ID));
             } catch (Exception e) {
-                log.error("Error in getting auditor provider", e);
+                log.error("❌ Error in getting auditor provider", e);
                 return Optional.of(ApplicationConstant.APPLICATION_UNKNOWN_USER);
             }
-
         };
     }
 
     @Bean
-    DateTimeProvider dateTimeProvider() {
+    public DateTimeProvider dateTimeProvider() {
         return () -> Optional.of(LocalDateTime.now(ZoneId.systemDefault()));
     }
-
 }

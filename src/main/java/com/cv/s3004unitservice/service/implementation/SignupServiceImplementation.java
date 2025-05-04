@@ -92,7 +92,7 @@ public class SignupServiceImplementation implements SignupService {
                             .build(),
                     Locale.ENGLISH,
                     (signupDto.getEntityCode() + "," + signupDto.getEntityName() + "," + userDetail.getUserId()).toUpperCase(),
-                    environment.getProperty("app.api-gateway.unit-service.login-url"),
+                    environment.getProperty("app.unit-service.login-url"),
                     userDetail.getId()
             ));
             return true;

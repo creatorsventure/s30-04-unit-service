@@ -1,6 +1,7 @@
 package com.cv.s3004unitservice.service.implementation;
 
 import com.cv.s10coreservice.config.props.CoreSecurityProperties;
+import com.cv.s10coreservice.constant.ApplicationConstant;
 import com.cv.s10coreservice.dto.AuthInfoDto;
 import com.cv.s10coreservice.exception.ExceptionComponent;
 import com.cv.s10coreservice.service.component.JWTComponent;
@@ -80,6 +81,7 @@ public class AuthenticationServiceImplementation implements AuthenticationServic
         return AuthInfoDto.builder()
                 .userId(userDetail.getUserId())
                 .name(userDetail.getName())
+                .unitId(userDetail.getUnitId())
                 .email(userDetail.getEmail())
                 .roleId(userDetail.getRole().getId())
                 .permissions(userDetail.getRole().getPermissionList().stream().map(Permission::getPermissionCode).collect(Collectors.toList()))
@@ -92,8 +94,10 @@ public class AuthenticationServiceImplementation implements AuthenticationServic
         return jwtComponent.generateAccessToken(
                 userDetail.getUserId(),
                 Map.ofEntries(
-                        Map.entry("id", userDetail.getId()),
-                        Map.entry("name", userDetail.getName())));
+                        Map.entry(ApplicationConstant.X_HEADER_USER_ID, userDetail.getUserId()),
+                        Map.entry(ApplicationConstant.X_HEADER_USER_NAME, userDetail.getName()),
+                        Map.entry(ApplicationConstant.X_HEADER_UNIT_ID, userDetail.getUnitId())
+                ));
     }
 
     private String createAndStoreRefreshToken(UserDetail userDetail) throws Exception {

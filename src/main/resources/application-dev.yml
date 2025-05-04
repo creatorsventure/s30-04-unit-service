@@ -3,6 +3,7 @@ spring:
     name: s30-04-unit-service-v1
     version: v1
 
+
 server:
   port: 8030
   servlet:

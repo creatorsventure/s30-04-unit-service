@@ -1,0 +1,13 @@
+package com.cv.s3004unitservice.repository;
+
+import com.cv.s10coreservice.repository.generic.GenericRepository;
+import com.cv.s10coreservice.repository.generic.GenericSpecification;
+import com.cv.s3002unitservicepojo.entity.UnitOptions;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface UnitOptionsRepository extends GenericRepository, GenericSpecification<UnitOptions>,
+        JpaRepository<UnitOptions, String>, JpaSpecificationExecutor<UnitOptions> {
+}
