@@ -109,7 +109,7 @@ public class UnitOptionsController implements GenericController<UnitOptionsDto> 
         }
     }
 
-    @GetMapping(UnitConstant.APP_NAVIGATION_API_UNIT_OPTIONS_SYNC)
+    @GetMapping(UnitConstant.APP_NAVIGATION_API_UNIT_OPTIONS_ORG)
     public ResponseEntity<Object> readOrgOptions() {
         try {
             return StaticUtil.getSuccessResponse(service.readOrgOptions(), APIResponseType.OBJECT_ONE);

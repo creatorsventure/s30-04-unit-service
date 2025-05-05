@@ -67,7 +67,7 @@
         <spring-doc-version>2.8.6</spring-doc-version>
 
         <org-service-pojo-version>0.0.10-SNAPSHOT</org-service-pojo-version>
-        <unit-service-pojo-version>0.0.47-SNAPSHOT</unit-service-pojo-version>
+        <unit-service-pojo-version>0.0.49-SNAPSHOT</unit-service-pojo-version>
         <notify-service-pojo-version>0.0.31-SNAPSHOT</notify-service-pojo-version>
     </properties>
     <dependencies>
