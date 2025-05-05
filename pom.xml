@@ -39,7 +39,7 @@
     </dependencyManagement>
     <repositories>
         <repository>
-            <id>github</id>
+            <id>github-s20-02-org-service-pojo</id>
             <url>
                 https://maven.pkg.github.com/creatorsventure/s20-02-org-service-pojo
             </url>
@@ -49,7 +49,7 @@
             </snapshots>
         </repository>
         <repository>
-            <id>github</id>
+            <id>github-s30-02-unit-service-pojo</id>
             <url>
                 https://maven.pkg.github.com/creatorsventure/s30-02-unit-service-pojo
             </url>
@@ -66,8 +66,8 @@
         <spring-cloud.version>2024.0.1</spring-cloud.version>
         <spring-doc-version>2.8.6</spring-doc-version>
 
-        <org-service-pojo-version>0.0.5-SNAPSHOT</org-service-pojo-version>
-        <unit-service-pojo-version>0.0.45-SNAPSHOT</unit-service-pojo-version>
+        <org-service-pojo-version>0.0.10-SNAPSHOT</org-service-pojo-version>
+        <unit-service-pojo-version>0.0.47-SNAPSHOT</unit-service-pojo-version>
         <notify-service-pojo-version>0.0.31-SNAPSHOT</notify-service-pojo-version>
     </properties>
     <dependencies>

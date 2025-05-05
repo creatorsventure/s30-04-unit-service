@@ -99,19 +99,10 @@ public class UnitOptionsServiceImplementation implements UnitOptionsService {
     }
 
     @Override
-    public boolean syncOptions() throws Exception {
-        var optionsDto = apiServiceCaller.callOptional(OrgServiceClient.class,
-                client -> client.resolveOptions(RequestContext.getUnitId()),
-                OptionsDto.class);
-        if (optionsDto.isPresent()) {
-            var unitOptions = repository.findByUnitIdAndStatusTrue(RequestContext.getUnitId())
-                    .orElseGet(UnitOptions::new);
-            unitOptions = mapper.toUnitOptionsEntity(optionsDto.get());
-            unitOptions.setUnitId(RequestContext.getUnitId());
-            repository.save(unitOptions);
-        } else {
-            throw exceptionComponent.expose("org-service.failure.options.sync", true);
-        }
-        return false;
+    public OptionsDto readOrgOptions() throws Exception {
+        return apiServiceCaller.callOptional(OrgServiceClient.class,
+                        client -> client.resolveOptions(RequestContext.getUnitId()),
+                        OptionsDto.class)
+                .orElseThrow(() -> exceptionComponent.expose("app.message.failure.object.unavailable", true));
     }
 }

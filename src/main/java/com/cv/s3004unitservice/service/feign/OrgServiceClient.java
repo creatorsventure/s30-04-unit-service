@@ -13,10 +13,10 @@ public interface OrgServiceClient {
 
     @Cacheable(value = ApplicationConstant.APPLICATION_CONTEXT_CACHE, keyGenerator = "cacheKeyGenerator")
     @GetMapping("${app.org-service.contextPath}" + ORGConstant.APP_NAVIGATION_API_UNIT + ORGConstant.APP_NAVIGATION_API_UNIT_RESOLVE_ID)
-    ResponseEntity<String> resolveContext(@RequestParam("code") String code);
+    String resolveContext(@RequestParam("code") String code);
 
     @Cacheable(value = ApplicationConstant.APPLICATION_FEIGN_CACHE, keyGenerator = "cacheKeyGenerator")
     @GetMapping("${app.org-service.contextPath}" + ORGConstant.APP_NAVIGATION_API_OPTIONS)
-    ResponseEntity<String> resolveOptions(@RequestParam("code") String code);
+    String resolveOptions(@RequestParam("code") String code);
 
 }

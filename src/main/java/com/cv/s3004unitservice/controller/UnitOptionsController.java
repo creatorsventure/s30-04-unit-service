@@ -110,9 +110,9 @@ public class UnitOptionsController implements GenericController<UnitOptionsDto> 
     }
 
     @GetMapping(UnitConstant.APP_NAVIGATION_API_UNIT_OPTIONS_SYNC)
-    public ResponseEntity<Object> syncOptions() {
+    public ResponseEntity<Object> readOrgOptions() {
         try {
-            return StaticUtil.getSuccessResponse(service.syncOptions(), APIResponseType.OBJECT_ONE);
+            return StaticUtil.getSuccessResponse(service.readOrgOptions(), APIResponseType.OBJECT_ONE);
         } catch (Exception e) {
             log.error("UnitOptionsController.syncOptions {}", ExceptionUtils.getStackTrace(e));
             return StaticUtil.getFailureResponse(e);
