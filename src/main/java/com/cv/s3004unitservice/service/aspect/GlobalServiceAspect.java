@@ -19,8 +19,6 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
-
 @Aspect
 @AllArgsConstructor
 @Slf4j
@@ -72,7 +70,6 @@ public class GlobalServiceAspect {
         long start = System.currentTimeMillis();
         try {
             Session session = entityManager.unwrap(Session.class);
-            Map<String, String> contextValues = RequestContext.getAll();
 
             // Enable unit filter if isn't already enabled
             Filter unitFilter = session.getEnabledFilter(ApplicationConstant.HIBERNATE_UNIT_FILTER_NAME);
@@ -80,9 +77,9 @@ public class GlobalServiceAspect {
                 unitFilter = session.enableFilter(ApplicationConstant.HIBERNATE_UNIT_FILTER_NAME);
             }
 
-            if (unitFilter != null && contextValues.get("unitId") != null) {
-                log.debug("➡️ applyHibernateFilters: Applying unitId filter param = {}", contextValues.get("unitId"));
-                unitFilter.setParameter("unitId", contextValues.get("unitId"));
+            if (unitFilter != null && RequestContext.getUnitId() != null) {
+                log.debug("➡️ applyHibernateFilters: Applying unitId filter param = {}", RequestContext.getUnitId());
+                unitFilter.setParameter(ApplicationConstant.HIBERNATE_PARAM_UNIT_ID, RequestContext.getUnitId());
             } else {
                 throw exceptionComponent.expose("⚠️ applyHibernateFilters: unitId is not set in RequestContext; and merchantFilter is null.", false);
             }

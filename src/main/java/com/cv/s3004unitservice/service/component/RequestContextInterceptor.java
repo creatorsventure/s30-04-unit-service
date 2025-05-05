@@ -5,39 +5,27 @@ import com.cv.s10coreservice.constant.ApplicationConstant;
 import com.cv.s10coreservice.context.RequestContext;
 import com.cv.s10coreservice.dto.ContextParamDto;
 import com.cv.s10coreservice.exception.ExceptionComponent;
+import com.cv.s10coreservice.service.component.APIServiceCaller;
 import com.cv.s2002orgservicepojo.constant.ORGConstant;
 import com.cv.s3004unitservice.service.feign.OrgServiceClient;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+@AllArgsConstructor
 @Slf4j
 @Component
 public class RequestContextInterceptor implements HandlerInterceptor {
 
-    private final OrgServiceClient orgServiceClient;
-    private final APIResponseParser APIResponseParser;
     private final AppProperties appProperties;
     private final ExceptionComponent exceptionComponent;
+    private final APIServiceCaller apiServiceCaller;
 
-    // Constructed created to avoid the circular dependency between RequestContextInterceptor and OrgServiceFeignClient
-    @Autowired
-    public RequestContextInterceptor(
-            @Lazy OrgServiceClient orgServiceClient,
-            APIResponseParser APIResponseParser,
-            AppProperties appProperties,
-            ExceptionComponent exceptionComponent) {
-        this.orgServiceClient = orgServiceClient;
-        this.APIResponseParser = APIResponseParser;
-        this.appProperties = appProperties;
-        this.exceptionComponent = exceptionComponent;
-    }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -54,8 +42,8 @@ public class RequestContextInterceptor implements HandlerInterceptor {
             if (!StringUtils.hasText(unitId) && StringUtils.hasText(unitCode)) {
                 String uri = (appProperties.getOrgService().getContextPath() + ORGConstant.APP_NAVIGATION_API_UNIT + ORGConstant.APP_NAVIGATION_API_UNIT_RESOLVE_ID);
                 log.info("🔍 UnitId not found, trying to fetch using UnitCode={}, path={}", unitCode, appProperties.getOrgService().getName() + uri);
-                var dto = APIResponseParser.parse(
-                        () -> orgServiceClient.resolveContext(unitCode),
+                var dto = apiServiceCaller.call(OrgServiceClient.class,
+                        client -> client.resolveContext(unitCode),
                         ContextParamDto.class);
                 if (dto != null && StringUtils.hasText(dto.getUnitId())) {
                     log.info("✅ Retrieved UnitId={} for UnitCode={}", dto.getUnitId(), unitCode);
@@ -67,7 +55,7 @@ public class RequestContextInterceptor implements HandlerInterceptor {
 
             // Set values into RequestContext
             if (StringUtils.hasText(unitId)) {
-                RequestContext.set("unitId", unitId);
+                RequestContext.setUnitId(unitId);
             } else {
                 throw exceptionComponent.expose("app.message.id.extraction.failure", true);
             }

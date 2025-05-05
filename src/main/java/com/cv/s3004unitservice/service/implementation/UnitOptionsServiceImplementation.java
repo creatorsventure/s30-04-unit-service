@@ -1,15 +1,20 @@
 package com.cv.s3004unitservice.service.implementation;
 
+import com.cv.s10coreservice.context.RequestContext;
 import com.cv.s10coreservice.dto.PaginationDto;
 import com.cv.s10coreservice.exception.ExceptionComponent;
+import com.cv.s10coreservice.service.component.APIServiceCaller;
 import com.cv.s10coreservice.service.function.StaticFunction;
 import com.cv.s10coreservice.util.StaticUtil;
+import com.cv.s2002orgservicepojo.dto.OptionsDto;
 import com.cv.s3002unitservicepojo.constant.UnitConstant;
 import com.cv.s3002unitservicepojo.dto.UnitOptionsDto;
 import com.cv.s3002unitservicepojo.entity.UnitOptions;
 import com.cv.s3004unitservice.repository.UnitOptionsRepository;
+import com.cv.s3004unitservice.service.feign.OrgServiceClient;
 import com.cv.s3004unitservice.service.intrface.UnitOptionsService;
 import com.cv.s3004unitservice.service.mapper.UnitOptionsMapper;
+import feign.Client;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -29,7 +34,10 @@ import java.util.stream.Collectors;
 public class UnitOptionsServiceImplementation implements UnitOptionsService {
     private final UnitOptionsRepository repository;
     private final UnitOptionsMapper mapper;
+
+    private final APIServiceCaller apiServiceCaller;
     private final ExceptionComponent exceptionComponent;
+    private final Client client;
 
     @CacheEvict(keyGenerator = "cacheKeyGenerator", allEntries = true)
     @Override
@@ -88,5 +96,22 @@ public class UnitOptionsServiceImplementation implements UnitOptionsService {
     @Override
     public Map<String, String> readIdAndNameMap() throws Exception {
         return repository.findAllByStatusTrue(UnitOptions.class).orElseThrow(() -> exceptionComponent.expose("app.message.failure.object.unavailable", true)).stream().collect(Collectors.toMap(UnitOptions::getId, UnitOptions::getName));
+    }
+
+    @Override
+    public boolean syncOptions() throws Exception {
+        var optionsDto = apiServiceCaller.callOptional(OrgServiceClient.class,
+                client -> client.resolveOptions(RequestContext.getUnitId()),
+                OptionsDto.class);
+        if (optionsDto.isPresent()) {
+            var unitOptions = repository.findByUnitIdAndStatusTrue(RequestContext.getUnitId())
+                    .orElseGet(UnitOptions::new);
+            unitOptions = mapper.toUnitOptionsEntity(optionsDto.get());
+            unitOptions.setUnitId(RequestContext.getUnitId());
+            repository.save(unitOptions);
+        } else {
+            throw exceptionComponent.expose("org-service.failure.options.sync", true);
+        }
+        return false;
     }
 }
