@@ -1,13 +1,17 @@
 package com.cv.s3004unitservice.service.implementation;
 
+import com.cv.s10coreservice.context.RequestContext;
+import com.cv.s10coreservice.dto.IdNameMapDto;
 import com.cv.s10coreservice.dto.PaginationDto;
 import com.cv.s10coreservice.exception.ExceptionComponent;
+import com.cv.s10coreservice.service.component.APIServiceCaller;
 import com.cv.s10coreservice.service.function.StaticFunction;
 import com.cv.s10coreservice.util.StaticUtil;
 import com.cv.s3002unitservicepojo.constant.UnitConstant;
 import com.cv.s3002unitservicepojo.dto.BinDto;
 import com.cv.s3002unitservicepojo.entity.Bin;
 import com.cv.s3004unitservice.repository.BinRepository;
+import com.cv.s3004unitservice.service.feign.OrgServiceClient;
 import com.cv.s3004unitservice.service.intrface.BinService;
 import com.cv.s3004unitservice.service.mapper.BinMapper;
 import jakarta.transaction.Transactional;
@@ -30,6 +34,7 @@ public class BinServiceImplementation implements BinService {
     private final BinRepository repository;
     private final BinMapper mapper;
     private final ExceptionComponent exceptionComponent;
+    private final APIServiceCaller apiServiceCaller;
 
     @CacheEvict(keyGenerator = "cacheKeyGenerator", allEntries = true)
     @Override
@@ -88,5 +93,14 @@ public class BinServiceImplementation implements BinService {
     @Override
     public Map<String, String> readIdAndNameMap() throws Exception {
         return repository.findAllByStatusTrue(Bin.class).orElseThrow(() -> exceptionComponent.expose("app.message.failure.object.unavailable", true)).stream().collect(Collectors.toMap(Bin::getId, Bin::getName));
+    }
+
+    @Override
+    public Map<String, String> resolveOrgUnitScheme() throws Exception {
+        return apiServiceCaller.callOptional(OrgServiceClient.class,
+                        client -> client.resolveOrgUnitScheme(RequestContext.getUnitId()),
+                        IdNameMapDto.class)
+                .map(dto -> dto.getIdNameMaps().get("scheme"))
+                .orElseThrow(() -> exceptionComponent.expose("app.message.failure.object.unavailable", true));
     }
 }

@@ -19,6 +19,10 @@ public interface OrgServiceClient {
     String resolveOrgOptions(@RequestParam("unitId") String unitId);
 
     @Cacheable(value = ApplicationConstant.APPLICATION_FEIGN_CACHE, keyGenerator = "cacheKeyGenerator")
+    @GetMapping("${app.org-service.contextPath}" + ORGConstant.APP_NAVIGATION_API_UNIT + ORGConstant.APP_NAVIGATION_API_RESOLVE_UNIT_SCHEME)
+    String resolveOrgUnitScheme(@RequestParam("unitId") String unitId);
+
+    @Cacheable(value = ApplicationConstant.APPLICATION_FEIGN_CACHE, keyGenerator = "cacheKeyGenerator")
     @GetMapping("${app.org-service.contextPath}" + ORGConstant.APP_NAVIGATION_API_MERCHANT_CATEGORY + ApplicationConstant.APP_NAVIGATION_METHOD_READ_ID_NAME_MAP)
     String resolveOrgMcc();
 

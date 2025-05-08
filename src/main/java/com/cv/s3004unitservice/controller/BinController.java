@@ -108,4 +108,14 @@ public class BinController implements GenericController<BinDto> {
             return StaticUtil.getFailureResponse(e);
         }
     }
+
+    @GetMapping(UnitConstant.APP_NAVIGATION_API_RESOLVE_ORG_UNIT_SCHEME)
+    public ResponseEntity<Object> resolveOrgUnitScheme() {
+        try {
+            return StaticUtil.getSuccessResponse(service.resolveOrgUnitScheme(), APIResponseType.OBJECT_ONE);
+        } catch (Exception e) {
+            log.error("BinController.resolveOrgUnitScheme {}", ExceptionUtils.getStackTrace(e));
+            return StaticUtil.getFailureResponse(e);
+        }
+    }
 }
