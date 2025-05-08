@@ -10,7 +10,13 @@ import com.cv.s10coreservice.util.StaticUtil;
 import com.cv.s3002unitservicepojo.constant.UnitConstant;
 import com.cv.s3002unitservicepojo.dto.DeviceDto;
 import com.cv.s3002unitservicepojo.entity.Device;
+import com.cv.s3002unitservicepojo.entity.Merchant;
+import com.cv.s3002unitservicepojo.entity.UnitKey;
+import com.cv.s3002unitservicepojo.entity.UnitOptions;
 import com.cv.s3004unitservice.repository.DeviceRepository;
+import com.cv.s3004unitservice.repository.MerchantRepository;
+import com.cv.s3004unitservice.repository.UnitKeyRepository;
+import com.cv.s3004unitservice.repository.UnitOptionsRepository;
 import com.cv.s3004unitservice.service.feign.OrgServiceClient;
 import com.cv.s3004unitservice.service.intrface.DeviceService;
 import com.cv.s3004unitservice.service.mapper.DeviceMapper;
@@ -33,14 +39,18 @@ import java.util.stream.Collectors;
 public class DeviceServiceImplementation implements DeviceService {
     private final DeviceRepository repository;
     private final DeviceMapper mapper;
+    private final MerchantRepository merchantRepository;
+    private final UnitOptionsRepository unitOptionsRepository;
+    private final UnitKeyRepository unitKeyRepository;
     private final ExceptionComponent exceptionComponent;
-
     private final APIServiceCaller apiServiceCaller;
 
     @CacheEvict(keyGenerator = "cacheKeyGenerator", allEntries = true)
     @Override
     public DeviceDto create(DeviceDto dto) throws Exception {
-        return mapper.toDto(repository.save(mapper.toEntity(dto)));
+        var entity = mapper.toEntity(dto);
+        constructEntity(dto, entity);
+        return mapper.toDto(repository.save(entity));
     }
 
     @CacheEvict(keyGenerator = "cacheKeyGenerator", allEntries = true)
@@ -48,9 +58,19 @@ public class DeviceServiceImplementation implements DeviceService {
     public DeviceDto update(DeviceDto dto) throws Exception {
         return mapper.toDto(repository.findById(dto.getId()).map(entity -> {
             BeanUtils.copyProperties(dto, entity);
+            constructEntity(dto, entity);
             repository.save(entity);
             return entity;
         }).orElseThrow(() -> exceptionComponent.expose("app.message.failure.object.unavailable", true)));
+    }
+
+    private void constructEntity(DeviceDto dto, Device entity) {
+        entity.setMerchant(merchantRepository.findByIdAndStatusTrue(dto.getSelectedMerchantId(), Merchant.class)
+                .orElseThrow(() -> exceptionComponent.expose("app.message.failure.object.unavailable", true)));
+        entity.setUnitOptions(unitOptionsRepository.findByIdAndStatusTrue(dto.getSelectedUnitOptionsId(), UnitOptions.class)
+                .orElseThrow(() -> exceptionComponent.expose("app.message.failure.object.unavailable", true)));
+        entity.setUnitKey(unitKeyRepository.findByIdAndStatusTrue(dto.getSelectedUnitKeyId(), UnitKey.class)
+                .orElseThrow(() -> exceptionComponent.expose("app.message.failure.object.unavailable", true)));
     }
 
     @CacheEvict(keyGenerator = "cacheKeyGenerator", allEntries = true)
@@ -66,7 +86,14 @@ public class DeviceServiceImplementation implements DeviceService {
     @Cacheable(keyGenerator = "cacheKeyGenerator")
     @Override
     public DeviceDto readOne(String id) throws Exception {
-        return mapper.toDto(repository.findByIdAndStatusTrue(id, Device.class).orElseThrow(() -> exceptionComponent.expose("app.message.failure.object.unavailable", true)));
+        return repository.findByIdAndStatusTrue(id, Device.class)
+                .map(entity -> {
+                    var dto = mapper.toDto(entity);
+                    dto.setSelectedMerchantId(entity.getMerchant().getId());
+                    dto.setSelectedUnitOptionsId(entity.getUnitOptions().getId());
+                    dto.setSelectedUnitKeyId(entity.getUnitKey().getId());
+                    return dto;
+                }).orElseThrow(() -> exceptionComponent.expose("app.message.failure.object.unavailable", true));
     }
 
     @CacheEvict(keyGenerator = "cacheKeyGenerator", allEntries = true)
