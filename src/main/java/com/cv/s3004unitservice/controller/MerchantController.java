@@ -108,4 +108,14 @@ public class MerchantController implements GenericController<MerchantDto> {
             return StaticUtil.getFailureResponse(e);
         }
     }
+
+    @GetMapping(UnitConstant.APP_NAVIGATION_API_MERCHANT_RESOLVE_MCC)
+    public ResponseEntity<Object> resolveOrgMcc() {
+        try {
+            return StaticUtil.getSuccessResponse(service.resolveOrgMcc(), APIResponseType.OBJECT_ONE);
+        } catch (Exception e) {
+            log.error("MerchantController.resolveOrgMcc {}", ExceptionUtils.getStackTrace(e));
+            return StaticUtil.getFailureResponse(e);
+        }
+    }
 }

@@ -1,13 +1,17 @@
 package com.cv.s3004unitservice.service.implementation;
 
+import com.cv.s10coreservice.context.RequestContext;
+import com.cv.s10coreservice.dto.IdNameMapDto;
 import com.cv.s10coreservice.dto.PaginationDto;
 import com.cv.s10coreservice.exception.ExceptionComponent;
+import com.cv.s10coreservice.service.component.APIServiceCaller;
 import com.cv.s10coreservice.service.function.StaticFunction;
 import com.cv.s10coreservice.util.StaticUtil;
 import com.cv.s3002unitservicepojo.constant.UnitConstant;
 import com.cv.s3002unitservicepojo.dto.DeviceDto;
 import com.cv.s3002unitservicepojo.entity.Device;
 import com.cv.s3004unitservice.repository.DeviceRepository;
+import com.cv.s3004unitservice.service.feign.OrgServiceClient;
 import com.cv.s3004unitservice.service.intrface.DeviceService;
 import com.cv.s3004unitservice.service.mapper.DeviceMapper;
 import jakarta.transaction.Transactional;
@@ -30,6 +34,8 @@ public class DeviceServiceImplementation implements DeviceService {
     private final DeviceRepository repository;
     private final DeviceMapper mapper;
     private final ExceptionComponent exceptionComponent;
+
+    private final APIServiceCaller apiServiceCaller;
 
     @CacheEvict(keyGenerator = "cacheKeyGenerator", allEntries = true)
     @Override
@@ -88,5 +94,13 @@ public class DeviceServiceImplementation implements DeviceService {
     @Override
     public Map<String, String> readIdAndNameMap() throws Exception {
         return repository.findAllByStatusTrue(Device.class).orElseThrow(() -> exceptionComponent.expose("app.message.failure.object.unavailable", true)).stream().collect(Collectors.toMap(Device::getId, Device::getName));
+    }
+
+    @Override
+    public IdNameMapDto resolveOrgUnitIdNameMaps() throws Exception {
+        return apiServiceCaller.callOptional(OrgServiceClient.class,
+                        client -> client.resolveOrgUnitIdNameMaps(RequestContext.getUnitId()),
+                        IdNameMapDto.class)
+                .orElseThrow(() -> exceptionComponent.expose("app.message.failure.object.unavailable", true));
     }
 }

@@ -6,5 +6,5 @@ import com.cv.s3002unitservicepojo.dto.UnitOptionsDto;
 
 public interface UnitOptionsService extends GenericService<UnitOptionsDto> {
 
-    OptionsDto readOrgOptions() throws Exception;
+    OptionsDto resolveOrgOptions() throws Exception;
 }

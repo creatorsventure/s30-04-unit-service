@@ -108,4 +108,14 @@ public class DeviceController implements GenericController<DeviceDto> {
             return StaticUtil.getFailureResponse(e);
         }
     }
+
+    @GetMapping(UnitConstant.APP_NAVIGATION_API_RESOLVE_ORG_UNIT_ID_NAME_MAPS)
+    public ResponseEntity<Object> resolveOrgUnitIdNameMaps() {
+        try {
+            return StaticUtil.getSuccessResponse(service.resolveOrgUnitIdNameMaps(), APIResponseType.OBJECT_ONE);
+        } catch (Exception e) {
+            log.error("DeviceController.resolveOrgUnitIdNameMaps {}", ExceptionUtils.getStackTrace(e));
+            return StaticUtil.getFailureResponse(e);
+        }
+    }
 }

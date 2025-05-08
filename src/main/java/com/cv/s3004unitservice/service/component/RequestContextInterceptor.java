@@ -40,7 +40,7 @@ public class RequestContextInterceptor implements HandlerInterceptor {
         try {
             // If unitId is not available but unitCode is provided
             if (!StringUtils.hasText(unitId) && StringUtils.hasText(unitCode)) {
-                String uri = (appProperties.getOrgService().getContextPath() + ORGConstant.APP_NAVIGATION_API_UNIT + ORGConstant.APP_NAVIGATION_API_UNIT_RESOLVE_ID);
+                String uri = (appProperties.getOrgService().getContextPath() + ORGConstant.APP_NAVIGATION_API_UNIT + ORGConstant.APP_NAVIGATION_API_RESOLVE_UNIT_ID);
                 log.info("🔍 UnitId not found, trying to fetch using UnitCode={}, path={}", unitCode, appProperties.getOrgService().getName() + uri);
                 var dto = apiServiceCaller.call(OrgServiceClient.class,
                         client -> client.resolveContext(unitCode),

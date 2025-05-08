@@ -2,6 +2,8 @@ package com.cv.s3004unitservice.service.implementation;
 
 import com.cv.s10coreservice.dto.PaginationDto;
 import com.cv.s10coreservice.exception.ExceptionComponent;
+import com.cv.s10coreservice.service.component.CommunicationSecurity;
+import com.cv.s10coreservice.service.component.HybridEncryptionComponent;
 import com.cv.s10coreservice.service.function.StaticFunction;
 import com.cv.s10coreservice.util.StaticUtil;
 import com.cv.s3002unitservicepojo.constant.UnitConstant;
@@ -12,7 +14,6 @@ import com.cv.s3004unitservice.service.intrface.UnitKeyService;
 import com.cv.s3004unitservice.service.mapper.UnitKeyMapper;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -30,21 +31,34 @@ public class UnitKeyServiceImplementation implements UnitKeyService {
     private final UnitKeyRepository repository;
     private final UnitKeyMapper mapper;
     private final ExceptionComponent exceptionComponent;
+    private final CommunicationSecurity communicationSecurity;
+    private final HybridEncryptionComponent encryptionComponent;
 
     @CacheEvict(keyGenerator = "cacheKeyGenerator", allEntries = true)
     @Override
     public UnitKeyDto create(UnitKeyDto dto) throws Exception {
-        return mapper.toDto(repository.save(mapper.toEntity(dto)));
+        var entity = mapper.toEntity(dto);
+        var keyPair = communicationSecurity.generateKeyPair();
+        entity.setUnitCertificate(communicationSecurity.generateCertificatePem(
+                keyPair,
+                dto.getCommonName(),
+                dto.getOrganization(),
+                dto.getOrganizationalUnit(),
+                dto.getLocality(),
+                dto.getState(),
+                dto.getCountry(),
+                dto.getEmail(),
+                dto.getValidityYears()
+        ));
+        entity.setUnitPrivateKey(communicationSecurity.encryptPrivateKey(keyPair.getPrivate(), dto.getUnitPrivateKeyPassword()));
+        entity.setUnitPrivateKeyPassword(encryptionComponent.encrypt(dto.getUnitPrivateKeyPassword()));
+        return mapper.toDto(repository.save(entity));
     }
 
     @CacheEvict(keyGenerator = "cacheKeyGenerator", allEntries = true)
     @Override
     public UnitKeyDto update(UnitKeyDto dto) throws Exception {
-        return mapper.toDto(repository.findById(dto.getId()).map(entity -> {
-            BeanUtils.copyProperties(dto, entity);
-            repository.save(entity);
-            return entity;
-        }).orElseThrow(() -> exceptionComponent.expose("app.message.failure.object.unavailable", true)));
+        throw exceptionComponent.expose("app.message.failure.general", true);
     }
 
     @CacheEvict(keyGenerator = "cacheKeyGenerator", allEntries = true)

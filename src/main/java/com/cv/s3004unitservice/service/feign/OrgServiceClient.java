@@ -4,7 +4,6 @@ import com.cv.s10coreservice.constant.ApplicationConstant;
 import com.cv.s2002orgservicepojo.constant.ORGConstant;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -12,11 +11,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface OrgServiceClient {
 
     @Cacheable(value = ApplicationConstant.APPLICATION_CONTEXT_CACHE, keyGenerator = "cacheKeyGenerator")
-    @GetMapping("${app.org-service.contextPath}" + ORGConstant.APP_NAVIGATION_API_UNIT + ORGConstant.APP_NAVIGATION_API_UNIT_RESOLVE_ID)
-    String resolveContext(@RequestParam("code") String code);
+    @GetMapping("${app.org-service.contextPath}" + ORGConstant.APP_NAVIGATION_API_UNIT + ORGConstant.APP_NAVIGATION_API_RESOLVE_UNIT_ID)
+    String resolveContext(@RequestParam String code);
 
     @Cacheable(value = ApplicationConstant.APPLICATION_FEIGN_CACHE, keyGenerator = "cacheKeyGenerator")
-    @GetMapping("${app.org-service.contextPath}" + ORGConstant.APP_NAVIGATION_API_OPTIONS)
-    String resolveOptions(@RequestParam("code") String code);
+    @GetMapping("${app.org-service.contextPath}" + ORGConstant.APP_NAVIGATION_API_UNIT + ORGConstant.APP_NAVIGATION_API_RESOLVE_OPTIONS)
+    String resolveOrgOptions(@RequestParam("unitId") String unitId);
+
+    @Cacheable(value = ApplicationConstant.APPLICATION_FEIGN_CACHE, keyGenerator = "cacheKeyGenerator")
+    @GetMapping("${app.org-service.contextPath}" + ORGConstant.APP_NAVIGATION_API_MERCHANT_CATEGORY + ApplicationConstant.APP_NAVIGATION_METHOD_READ_ID_NAME_MAP)
+    String resolveOrgMcc();
+
+    @Cacheable(value = ApplicationConstant.APPLICATION_FEIGN_CACHE, keyGenerator = "cacheKeyGenerator")
+    @GetMapping("${app.org-service.contextPath}" + ORGConstant.APP_NAVIGATION_API_UNIT + ApplicationConstant.APP_NAVIGATION_METHOD_READ_ONE)
+    String resolveOrgUnit(@RequestParam("id") String id);
+
+    @Cacheable(value = ApplicationConstant.APPLICATION_FEIGN_CACHE, keyGenerator = "cacheKeyGenerator")
+    @GetMapping("${app.org-service.contextPath}" + ORGConstant.APP_NAVIGATION_API_UNIT + ORGConstant.APP_NAVIGATION_API_RESOLVE_UNIT_ID_NAME_MAPS)
+    String resolveOrgUnitIdNameMaps(@RequestParam("unitId") String unitId);
 
 }

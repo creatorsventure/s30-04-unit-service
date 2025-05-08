@@ -109,12 +109,12 @@ public class UnitOptionsController implements GenericController<UnitOptionsDto> 
         }
     }
 
-    @GetMapping(UnitConstant.APP_NAVIGATION_API_UNIT_OPTIONS_ORG)
-    public ResponseEntity<Object> readOrgOptions() {
+    @GetMapping(UnitConstant.APP_NAVIGATION_API_UNIT_OPTIONS_RESOLVE_ORG_OPTIONS)
+    public ResponseEntity<Object> resolveOrgOptions() {
         try {
-            return StaticUtil.getSuccessResponse(service.readOrgOptions(), APIResponseType.OBJECT_ONE);
+            return StaticUtil.getSuccessResponse(service.resolveOrgOptions(), APIResponseType.OBJECT_ONE);
         } catch (Exception e) {
-            log.error("UnitOptionsController.syncOptions {}", ExceptionUtils.getStackTrace(e));
+            log.error("UnitOptionsController.resolveOrgOptions {}", ExceptionUtils.getStackTrace(e));
             return StaticUtil.getFailureResponse(e);
         }
     }

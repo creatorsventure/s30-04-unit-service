@@ -14,7 +14,6 @@ import com.cv.s3004unitservice.repository.UnitOptionsRepository;
 import com.cv.s3004unitservice.service.feign.OrgServiceClient;
 import com.cv.s3004unitservice.service.intrface.UnitOptionsService;
 import com.cv.s3004unitservice.service.mapper.UnitOptionsMapper;
-import feign.Client;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -37,7 +36,6 @@ public class UnitOptionsServiceImplementation implements UnitOptionsService {
 
     private final APIServiceCaller apiServiceCaller;
     private final ExceptionComponent exceptionComponent;
-    private final Client client;
 
     @CacheEvict(keyGenerator = "cacheKeyGenerator", allEntries = true)
     @Override
@@ -99,9 +97,9 @@ public class UnitOptionsServiceImplementation implements UnitOptionsService {
     }
 
     @Override
-    public OptionsDto readOrgOptions() throws Exception {
+    public OptionsDto resolveOrgOptions() throws Exception {
         return apiServiceCaller.callOptional(OrgServiceClient.class,
-                        client -> client.resolveOptions(RequestContext.getUnitId()),
+                        client -> client.resolveOrgOptions(RequestContext.getUnitId()),
                         OptionsDto.class)
                 .orElseThrow(() -> exceptionComponent.expose("app.message.failure.object.unavailable", true));
     }
