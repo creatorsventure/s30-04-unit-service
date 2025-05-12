@@ -1,9 +1,9 @@
 package com.cv.s3004unitservice.service.implementation;
 
+import com.cv.core.s09coresecurity.component.CommunicationSecurity;
+import com.cv.core.s09coresecurity.component.HybridEncryptionComponent;
 import com.cv.s10coreservice.dto.PaginationDto;
 import com.cv.s10coreservice.exception.ExceptionComponent;
-import com.cv.s10coreservice.service.component.CommunicationSecurity;
-import com.cv.s10coreservice.service.component.HybridEncryptionComponent;
 import com.cv.s10coreservice.service.function.StaticFunction;
 import com.cv.s10coreservice.util.StaticUtil;
 import com.cv.s3002unitservicepojo.constant.UnitConstant;

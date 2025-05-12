@@ -1,6 +1,6 @@
 package com.cv.s3004unitservice.config;
 
-import com.cv.s10coreservice.config.props.CoreSecurityProperties;
+import com.cv.core.s09coresecurity.config.properties.CoreSecurityProperties;
 import com.cv.s10coreservice.constant.ApplicationConstant;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
