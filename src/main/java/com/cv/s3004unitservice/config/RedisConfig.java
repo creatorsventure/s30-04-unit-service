@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -21,6 +22,7 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import java.lang.reflect.Method;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
@@ -81,4 +83,37 @@ public class RedisConfig {
 
         return new GenericJackson2JsonRedisSerializer(objectMapper);
     }
+
+    @Bean("customUnitAwareCacheKeyGenerator")
+    public KeyGenerator customCacheKeyGenerator() {
+        return new KeyGenerator() {
+            @Override
+            public Object generate(Object target, Method method, Object... params) {
+                StringBuilder key = new StringBuilder();
+
+                // Application name or prefix
+                key.append("unit-app:");
+
+                // Class and method
+                key.append(target.getClass().getSimpleName())
+                        .append("_").append(method.getName());
+
+                // Add unitId manually
+                String unitId = com.cv.s10coreservice.context.RequestContext.getUnitId();
+                key.append("_unit_").append(unitId != null ? unitId : "null");
+
+                // Params hashed or appended
+                if (params.length > 0) {
+                    for (Object param : params) {
+                        key.append("_").append(param != null ? param.toString() : "null");
+                    }
+                } else {
+                    key.append("_NA");
+                }
+
+                return key.toString().toLowerCase();
+            }
+        };
+    }
+
 }

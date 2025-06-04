@@ -58,7 +58,7 @@
 
         <core-security.version>0.0.1-SNAPSHOT</core-security.version>
         <org-service-pojo-version>0.0.22-SNAPSHOT</org-service-pojo-version>
-        <unit-service-pojo-version>0.0.67-SNAPSHOT</unit-service-pojo-version>
+        <unit-service-pojo-version>0.0.304-SNAPSHOT</unit-service-pojo-version>
         <notify-service-pojo-version>0.0.31-SNAPSHOT</notify-service-pojo-version>
     </properties>
     <dependencies>

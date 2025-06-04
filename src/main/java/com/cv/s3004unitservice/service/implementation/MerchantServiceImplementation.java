@@ -76,7 +76,7 @@ public class MerchantServiceImplementation implements MerchantService {
         return true;
     }
 
-    @Cacheable(keyGenerator = "cacheKeyGenerator")
+    @Cacheable(keyGenerator = "customUnitAwareCacheKeyGenerator")
     @Override
     public PaginationDto readAll(PaginationDto dto) throws Exception {
         Page<Merchant> page;

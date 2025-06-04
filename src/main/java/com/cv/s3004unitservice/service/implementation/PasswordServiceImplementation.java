@@ -141,6 +141,7 @@ public class PasswordServiceImplementation implements PasswordService {
         entity.setEncryptedPassword(encryptionComponent.encrypt(dto.getPassword()));
         entity.setStatus(ApplicationConstant.APPLICATION_STATUS_ACTIVE);
         entity.setUserDetail(userEntity);
+        userEntity.setPassword(entity);
     }
 
 }

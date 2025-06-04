@@ -84,7 +84,7 @@ public class UnitKeyServiceImplementation implements UnitKeyService {
         return true;
     }
 
-    @Cacheable(keyGenerator = "cacheKeyGenerator")
+    @Cacheable(keyGenerator = "customUnitAwareCacheKeyGenerator")
     @Override
     public PaginationDto readAll(PaginationDto dto) throws Exception {
         Page<UnitKey> page;

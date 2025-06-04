@@ -75,7 +75,7 @@ public class BinServiceImplementation implements BinService {
         return true;
     }
 
-    @Cacheable(keyGenerator = "cacheKeyGenerator")
+    @Cacheable(keyGenerator = "customUnitAwareCacheKeyGenerator")
     @Override
     public PaginationDto readAll(PaginationDto dto) throws Exception {
         Page<Bin> page;
